@@ -12,13 +12,27 @@ export async function parseXmlString(xmlString: string): Promise<ParsedFileChang
     const parser = new DOMParser();
     const doc = parser.parseFromString(xmlString, "text/xml");
 
+    // Check for XML parsing errors
+    const errors = Array.from(doc.getElementsByTagName("parsererror"));
+    if (errors.length > 0) {
+      console.error("XML Parsing Error:", errors[0].textContent);
+      return null;
+    }
+
     const changedFilesNode = doc.getElementsByTagName("changed_files")[0];
     if (!changedFilesNode) {
+      console.warn("No <changed_files> element found in the XML");
       return null;
     }
 
     const fileNodes = changedFilesNode.getElementsByTagName("file");
+    if (fileNodes.length === 0) {
+      console.warn("No <file> elements found within <changed_files>");
+      return null;
+    }
+
     const changes: ParsedFileChange[] = [];
+    let skippedFiles = 0;
 
     for (let i = 0; i < fileNodes.length; i++) {
       const fileNode = fileNodes[i];
@@ -29,6 +43,8 @@ export async function parseXmlString(xmlString: string): Promise<ParsedFileChang
       const fileCodeNode = fileNode.getElementsByTagName("file_code")[0];
 
       if (!fileOperationNode || !filePathNode) {
+        console.warn(`Skipping file ${i + 1}: Missing required file_operation or file_path`);
+        skippedFiles++;
         continue;
       }
 
@@ -41,12 +57,25 @@ export async function parseXmlString(xmlString: string): Promise<ParsedFileChang
         file_code = fileCodeNode.textContent?.trim() ?? "";
       }
 
+      // Validate operation type
+      const validOperations = ["CREATE", "UPDATE", "DELETE", "REWRITE"];
+      const upperOperation = file_operation.toUpperCase();
+      if (!validOperations.includes(upperOperation)) {
+        console.warn(`Skipping file ${i + 1}: Invalid operation type "${file_operation}". Must be one of: ${validOperations.join(", ")}`);
+        skippedFiles++;
+        continue;
+      }
+
       changes.push({
         file_summary,
-        file_operation,
+        file_operation: upperOperation,
         file_path,
         file_code
       });
+    }
+
+    if (skippedFiles > 0) {
+      console.warn(`Skipped ${skippedFiles} file(s) due to missing required fields`);
     }
 
     return changes;
