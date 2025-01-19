@@ -1,5 +1,18 @@
 import { DOMParser } from "@xmldom/xmldom";
 
+// Secure XML parser options to prevent XXE attacks
+const SECURE_PARSER_OPTIONS = {
+  errorHandler: {
+    warning: (msg: string) => console.warn('XML Parser Warning:', msg),
+    error: (msg: string) => console.error('XML Parser Error:', msg),
+    fatalError: (msg: string) => console.error('XML Parser Fatal Error:', msg)
+  },
+  locator: {},
+  xmlns: true,
+  // Disable external entities to prevent XXE attacks
+  resolveExternalEntities: false
+};
+
 interface ParsedFileChange {
   file_summary: string;
   file_operation: string;
@@ -7,9 +20,12 @@ interface ParsedFileChange {
   file_code?: string;
 }
 
-export async function parseXmlString(xmlString: string): Promise<ParsedFileChange[] | null> {
+export async function parseXmlString(
+  xmlString: string
+): Promise<ParsedFileChange[] | null> {
   try {
-    const parser = new DOMParser();
+    const parser = new DOMParser(SECURE_PARSER_OPTIONS);
+    console.log(xmlString);
     const doc = parser.parseFromString(xmlString, "text/xml");
 
     // Check for XML parsing errors
@@ -38,12 +54,15 @@ export async function parseXmlString(xmlString: string): Promise<ParsedFileChang
       const fileNode = fileNodes[i];
 
       const fileSummaryNode = fileNode.getElementsByTagName("file_summary")[0];
-      const fileOperationNode = fileNode.getElementsByTagName("file_operation")[0];
+      const fileOperationNode =
+        fileNode.getElementsByTagName("file_operation")[0];
       const filePathNode = fileNode.getElementsByTagName("file_path")[0];
       const fileCodeNode = fileNode.getElementsByTagName("file_code")[0];
 
       if (!fileOperationNode || !filePathNode) {
-        console.warn(`Skipping file ${i + 1}: Missing required file_operation or file_path`);
+        console.warn(
+          `Skipping file ${i + 1}: Missing required file_operation or file_path`
+        );
         skippedFiles++;
         continue;
       }
@@ -61,7 +80,13 @@ export async function parseXmlString(xmlString: string): Promise<ParsedFileChang
       const validOperations = ["CREATE", "UPDATE", "DELETE", "REWRITE"];
       const upperOperation = file_operation.toUpperCase();
       if (!validOperations.includes(upperOperation)) {
-        console.warn(`Skipping file ${i + 1}: Invalid operation type "${file_operation}". Must be one of: ${validOperations.join(", ")}`);
+        console.warn(
+          `Skipping file ${
+            i + 1
+          }: Invalid operation type "${file_operation}". Must be one of: ${validOperations.join(
+            ", "
+          )}`
+        );
         skippedFiles++;
         continue;
       }
@@ -70,12 +95,14 @@ export async function parseXmlString(xmlString: string): Promise<ParsedFileChang
         file_summary,
         file_operation: upperOperation,
         file_path,
-        file_code
+        file_code,
       });
     }
 
     if (skippedFiles > 0) {
-      console.warn(`Skipped ${skippedFiles} file(s) due to missing required fields`);
+      console.warn(
+        `Skipped ${skippedFiles} file(s) due to missing required fields`
+      );
     }
 
     return changes;

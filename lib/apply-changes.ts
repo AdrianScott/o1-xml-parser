@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import { dirname, join } from "path";
+import { validatePath, validateFileSize } from "./security";
 
 interface FileChange {
   file_summary: string;
@@ -10,43 +11,50 @@ interface FileChange {
 
 export async function applyFileChanges(change: FileChange, projectDirectory: string) {
   const { file_operation, file_path, file_code } = change;
-  const fullPath = join(projectDirectory, file_path);
+  
+  // Validate and sanitize the file path
+  const safePath = validatePath(projectDirectory, file_path);
+  const fullPath = join(projectDirectory, safePath);
 
   try {
     switch (file_operation.toUpperCase()) {
       case "CREATE":
         if (!file_code) {
-          throw new Error(`No file_code provided for CREATE operation on ${file_path}`);
+          throw new Error(`No file_code provided for CREATE operation on ${safePath}`);
         }
-        console.log(`📝 Creating file: ${file_path}`);
+        // Validate file size
+        validateFileSize(file_code);
+        console.log(`📝 Creating file: ${safePath}`);
         await ensureDirectoryExists(dirname(fullPath));
         await fs.writeFile(fullPath, file_code, "utf-8");
-        console.log(`✅ Created: ${file_path}`);
+        console.log(`✅ Created: ${safePath}`);
         break;
 
       case "UPDATE":
       case "REWRITE":
         if (!file_code) {
-          throw new Error(`No file_code provided for ${file_operation} operation on ${file_path}`);
+          throw new Error(`No file_code provided for ${file_operation} operation on ${safePath}`);
         }
-        console.log(`📝 ${file_operation === "REWRITE" ? "Rewriting" : "Updating"} file: ${file_path}`);
+        // Validate file size
+        validateFileSize(file_code);
+        console.log(`📝 ${file_operation === "REWRITE" ? "Rewriting" : "Updating"} file: ${safePath}`);
         await ensureDirectoryExists(dirname(fullPath));
         await fs.writeFile(fullPath, file_code, "utf-8");
-        console.log(`✅ ${file_operation === "REWRITE" ? "Rewrote" : "Updated"}: ${file_path}`);
+        console.log(`✅ ${file_operation === "REWRITE" ? "Rewrote" : "Updated"}: ${safePath}`);
         break;
 
       case "DELETE":
-        console.log(`🗑️  Deleting file: ${file_path}`);
+        console.log(`🗑️  Deleting file: ${safePath}`);
         await fs.rm(fullPath, { force: true });
-        console.log(`✅ Deleted: ${file_path}`);
+        console.log(`✅ Deleted: ${safePath}`);
         break;
 
       default:
-        console.warn(`⚠️  Unknown file_operation: ${file_operation} for file: ${file_path}`);
+        console.warn(`⚠️  Unknown file_operation: ${file_operation} for file: ${safePath}`);
         break;
     }
   } catch (error: any) {
-    console.error(`❌ Error ${file_operation.toLowerCase()}ing ${file_path}:`, error.message);
+    console.error(`❌ Error ${file_operation.toLowerCase()}ing ${safePath}:`, error.message);
     throw error;
   }
 }
