@@ -2,11 +2,9 @@ import { DOMParser } from "@xmldom/xmldom";
 
 // Secure XML parser options to prevent XXE attacks
 const SECURE_PARSER_OPTIONS = {
-  errorHandler: {
-    warning: (msg: string) => console.warn('XML Parser Warning:', msg),
-    error: (msg: string) => console.error('XML Parser Error:', msg),
-    fatalError: (msg: string) => console.error('XML Parser Fatal Error:', msg)
-  },
+  // Use onError, onWarning callbacks instead of errorHandler object
+  onError: (msg: string) => console.error('XML Parser Error:', msg),
+  onWarning: (msg: string) => console.warn('XML Parser Warning:', msg),
   locator: {},
   xmlns: true,
   // Disable external entities to prevent XXE attacks
