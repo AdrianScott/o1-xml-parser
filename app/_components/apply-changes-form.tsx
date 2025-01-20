@@ -37,6 +37,16 @@ export function ApplyChangesForm() {
 
   return (
     <div className="max-w-xl w-full mx-auto p-4 flex flex-col gap-4">
+      {/* Title */}
+      <h1 className="text-2xl font-bold text-center mb-2 text-gray-800 dark:text-gray-200">
+        O1-xml-parser{" "}
+        <span className="text-lg font-normal text-gray-600 dark:text-gray-400">
+          (@AdrianDoesAI/@mckaywrigley)
+        </span>
+      </h1>
+      <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
+        Use this to apply code changes received from the LLM (e.g. O1) to your local files
+      </p>
       {errorMessage && <div className="text-red-400">{errorMessage}</div>}
       {successMessage && <div className="text-green-400">{successMessage}</div>}
       <div className="flex flex-col">
@@ -64,6 +74,44 @@ export function ApplyChangesForm() {
       >
         Apply
       </button>
+
+      {/* Social Links */}
+      <div className="mt-8 flex flex-col gap-4 text-base">
+        <a
+          href="https://freepoprompt.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 text-center font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+        >
+          🚀 Use with FreepoPrompt
+        </a>
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            "I'm rocking O1-pro for my coding w/ o1-xml-parser! @AdrianDoesAI"
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 text-center font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+        >
+          𝕏 Share on X
+        </a>
+        <a
+          href="https://twitter.com/AdrianDoesAI"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 text-center font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+        >
+          𝕏 Follow @AdrianDoesAI
+        </a>
+        <a
+          href="https://twitter.com/mckayWrigley"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 text-center font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+        >
+          𝕏 Follow @mckaywrigley
+        </a>
+      </div>
     </div>
   );
 }
