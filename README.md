@@ -18,7 +18,7 @@ View a tutorial [here](https://x.com/mckaywrigley/status/1865825221560893798).
 1. Clone the repo.
 
 ```bash
-git clone https://github.com/mckaywrigley/o1-xml-parser
+git clone https://github.com/AdrianScott/o1-xml-parser
 ```
 
 2. Install dependencies.
@@ -185,18 +185,9 @@ reply xml section xml schema:
 </xs:schema>
 ```
 
-## About Mckay Wrigley
-
-Follow Mckay Wrigley here:
-
-- [X](https://x.com/mckaywrigley)
-- [YouTube](https://www.youtube.com/@realmckaywrigley)
-- [GitHub](https://github.com/mckaywrigley)
-- [Newsletter](https://mckaywrigley.substack.com/)
-
 ## Community & Support
 
-### Social Links
+### Social Links - Adrian Does A.I.
 
 - [Follow @AdrianDoesAI on X](https://x.com/intent/follow?screen_name=AdrianDoesAI)
 - [Join our Discord Community](https://discord.gg/uQjNv9pWFm)
@@ -226,6 +217,15 @@ If you use o1-xml-parser in your research or project, please cite it as:
   url = {https://github.com/AdrianScott/o1-xml-parser}
 }
 ```
+
+## About Mckay Wrigley
+
+Follow Mckay Wrigley here:
+
+- [X](https://x.com/mckaywrigley)
+- [YouTube](https://www.youtube.com/@realmckaywrigley)
+- [GitHub](https://github.com/mckaywrigley)
+- [Newsletter](https://mckaywrigley.substack.com/)
 
 ## No Warranty
 
