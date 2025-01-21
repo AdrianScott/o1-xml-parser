@@ -45,52 +45,187 @@ npm run dev
 
 ## The XML Prompt
 
-You are an expert software engineer.
-
-You are tasked with following my instructions.
-
-Use the included project instructions as a general guide.
-
 ### o1 format
 
 ```
 You will respond with 2 sections: A summary section and an XML section.
 
-Here are some notes on how you should respond in the summary section:
-
+Summary section:
 Provide a brief overall summary
 Provide a 1-sentence summary for each file changed and why.
 Provide a 1-sentence summary for each file deleted and why.
 Format this section as markdown.
-Here are some notes on how you should respond in the XML section:
 
-Respond with the XML and nothing else
-Include all of the changed files
-Specify each file operation with CREATE, UPDATE, or DELETE
-If it is a CREATE or UPDATE include the full file code. Do not get lazy.
-Each file should include a brief change summary.
-Include only the local file path starting after the root directory. Do not include the full root path.
-I am going to copy/paste that entire XML section into a parser to automatically apply the changes you made, so put the XML block inside a markdown codeblock.
+Present a complete plan to solve the problem and implement it in the codebase.
+
+At the end of your response, respond with the following XML section (if applicable).
+
+XML Section:
+
+    Do not get lazy. Always output the full code in the XML section.
+    Enclose this entire section in a markdown codeblock.
+    Include all of the changed files.
+    Specify each file operation with CREATE, UPDATE, or DELETE.
+    For CREATE or UPDATE operations, include the full file code.
+	Each file should include a brief change summary (<file_summary>).
+    Use only the local file path starting after the root directory. (Do not include the full root path.) relative to the project directory, good: app/page.tsx, bad: /Users/mckaywrigley/Desktop/projects/new-chat-template/app/page.tsx)
+    Enclose the code with ![CDATA[CODE HERE]]
+	If the code has ]]> in it, replace that part with ]]]]><![CDATA[> so it won't break the XML
+    Use the following XML structure:
+
+<code_changes>
+  <changed_files>
+    <file>
+      <file_operation>__FILE OPERATION HERE__</file_operation>
+      <file_path>__FILE PATH HERE__</file_path>
+      <file_code><![CDATA[
+__FULL FILE CODE HERE__
+]]></file_code>
+    </file>
+    __REMAINING FILES HERE__
+  </changed_files>
+</code_changes>
+
+Other rules:
+    DO NOT remove <ai_context> sections. These are to provide you additional context about each file.
+    If you create a file, add an <ai_context> comment section at the top of the file.
+    If you update a file make sure its <ai_context> stays up-to-date
+    DO NOT add comments related to your edits
+    DO NOT remove my existing comments
+
+We may go back and forth a few times. If we do, remember to continue to output the entirety of the code in an XML section (if applicable).
+
+Take all the time you need.
+
+We will copy/paste that entire XML section into a parser to automatically apply the changes you made, so put the XML in a fenced code block like this:
+
+<code_changes> <changed_files> <file><file_summary>BRIEF CHANGE SUMMARY HERE</file_summary> <file_operation>FILE OPERATION HERE</file_operation> <file_path>FILE PATH HERE</file_path> <file_code><![CDATA[CODE HERE]]></file_code></file><!-- more <file> blocks here if needed --></changed_files> </code_changes>
+
 Make sure to enclose the code with ![CDATA[CODE HERE]], and don’t put “===“ at the beginning or end of the code.
-Here is how you should structure the XML:
 
-<code_changes> <changed_files> <file><file_summary>BRIEF CHANGE SUMMARY HERE</file_summary> <file_operation>FILE OPERATION HERE</file_operation> <file_path>FILE PATH HERE</file_path> <file_code></file_code></file> REMAINING FILES HERE </changed_files> </code_changes>
 
-So the XML section will be:
+Example Format
 
-__XML HERE__
+Summary Section (in Markdown):
+
+**Summary of Changes**
+- Overall: ...
+- File A: ...
+- File B: ...
+
+XML Section (in a fenced code block, so we can parse it):
+
+<code_changes>
+    <changed_files>
+        <file>
+            <file_summary>BRIEF CHANGE SUMMARY HERE</file_summary>
+            <file_operation>CREATE or UPDATE or DELETE</file_operation>
+            <file_path>relative/path/to/file.py</file_path>
+            <file_code><![CDATA[
+# (file code here, with any internal XML tags escaped or wrapped)
+]]></file_code>
+        </file>
+    </changed_files>
+</code_changes>
+
+Remember: The entire XML output is placed inside a single fenced code block, so it can be parsed automatically.
+
+reply xml section xml schema:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="https://example.com/code_changes"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+  <!-- Root element: <code_changes> -->
+  <xs:element name="code_changes">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- A required <changed_files> element -->
+        <xs:element name="changed_files">
+          <xs:complexType>
+            <xs:sequence>
+              <!-- One or more <file> elements -->
+              <xs:element name="file" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+
+                    <!-- <file_summary>: short text describing the change -->
+                    <xs:element name="file_summary" type="xs:string"/>
+
+                    <!-- <file_operation>: must be CREATE, UPDATE, or DELETE -->
+                    <xs:element name="file_operation">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:enumeration value="CREATE"/>
+                          <xs:enumeration value="UPDATE"/>
+                          <xs:enumeration value="DELETE"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+
+                    <!-- <file_path>: local (relative) file path -->
+                    <xs:element name="file_path" type="xs:string"/>
+
+                    <!-- <file_code>: entire file content wrapped in <![CDATA[...]]> -->
+                    <xs:element name="file_code" type="xs:string"/>
+
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
 ```
 
 ## About Mckay Wrigley
 
-"I'm Mckay. I like to build AI tools."
-
-Follow me here:
+Follow Mckay Wrigley here:
 
 - [X](https://x.com/mckaywrigley)
 - [YouTube](https://www.youtube.com/@realmckaywrigley)
 - [GitHub](https://github.com/mckaywrigley)
 - [Newsletter](https://mckaywrigley.substack.com/)
+
+## Community & Support
+
+### Social Links
+
+- [Follow @AdrianDoesAI on X](https://x.com/intent/follow?screen_name=AdrianDoesAI)
+- [Join our Discord Community](https://discord.gg/uQjNv9pWFm)
+- [Star on GitHub](https://github.com/AdrianScott/o1-xml-parser)
+- [Visit AdrianDoesAI.com](https://adriandoesai.com)
+
+### Support the Project
+
+If you find o1-xml-parser helpful, consider supporting its development:
+
+bc1qvzqjyrmu0tz75g67mfprfsc5gp304nzcvtz83n
+
+(or DM on X for Zelle)
+
+Your support helps maintain and improve o1-xml-parser for everyone!
+
+### Citation
+
+If you use o1-xml-parser in your research or project, please cite it as:
+
+```bibtex
+@software{o1-xml-parser2025,
+  author = {Adrian Scott},
+  title = {o1-xml-parser: XML Parser for LLM/o1-pro chat coding},
+  year = {2025},
+  publisher = {GitHub},
+  url = {https://github.com/AdrianScott/o1-xml-parser}
+}
+```
 
 ## No Warranty
 
