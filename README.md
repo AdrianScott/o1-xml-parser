@@ -19,6 +19,7 @@ View a tutorial [here](https://x.com/mckaywrigley/status/1865825221560893798).
 
 ```bash
 git clone https://github.com/AdrianScott/o1-xml-parser
+cd o1-xml-parser
 ```
 
 2. Install dependencies.
@@ -43,7 +44,11 @@ PROJECT_DIRECTORY=/path/to/your/project # Ex: /Users/you/your-project
 npm run dev
 ```
 
+5. Open in browser, e.g. http://localhost:3000
+
 ## The XML Prompt
+
+Use this in the prompt you submit to the LLM, so it generates the XML output that this tool can parse:
 
 ### o1 format
 
