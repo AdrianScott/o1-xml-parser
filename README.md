@@ -13,6 +13,8 @@ This is a fork of Mckay Wrigley's [o1-xml-parser](https://github.com/mckaywrigle
 
 View a tutorial [here](https://x.com/mckaywrigley/status/1865825221560893798).
 
+But now you can use [FreepoPrompt](https://github.com/AdrianScott/freepoprompt) instead of RepoPrompt,using various platforms to generate prompts for o1-xml-parser, so you're not limited to MacOS.
+
 ## Quick Start
 
 1. Clone the repo.
