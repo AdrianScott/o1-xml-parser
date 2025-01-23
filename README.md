@@ -94,9 +94,6 @@ __FULL FILE CODE HERE__
 </code_changes>
 
 Other rules:
-    DO NOT remove <ai_context> sections. These are to provide you additional context about each file.
-    If you create a file, add an <ai_context> comment section at the top of the file.
-    If you update a file make sure its <ai_context> stays up-to-date
     DO NOT add comments related to your edits
     DO NOT remove my existing comments
 
