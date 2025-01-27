@@ -10,6 +10,19 @@ interface FileChange {
 }
 
 export async function applyFileChanges(change: FileChange, projectDirectory: string) {
+  // Check if project directory exists
+  try {
+    const dirStats = await fs.stat(projectDirectory);
+    if (!dirStats.isDirectory()) {
+      throw new Error(`Project path exists but is not a directory: ${projectDirectory}`);
+    }
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      throw new Error(`Project directory does not exist: ${projectDirectory}`);
+    }
+    throw error;
+  }
+
   const { file_operation, file_path, file_code } = change;
   
   // Validate and sanitize the file path
